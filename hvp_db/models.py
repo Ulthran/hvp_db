@@ -96,7 +96,6 @@ class Sample(Base):
     participant_id: Mapped[str] = mapped_column(String(16), nullable=False)
     anatomical_site: Mapped[str] = mapped_column(AnatomicalSite, nullable=False)
     lab_origin: Mapped[Optional[str]] = mapped_column(LabOrigin)
-    date_collected: Mapped[date] = mapped_column(Date, nullable=False)
     date_hvp_custody: Mapped[Optional[date]] = mapped_column(Date)
     storage_buffer: Mapped[str] = mapped_column(StorageBuffer, nullable=False)
     raw_consumed_date: Mapped[Optional[date]] = mapped_column(Date)
