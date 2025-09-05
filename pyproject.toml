@@ -9,7 +9,7 @@ description = "SQLAlchemy models for the Human Virome Project database"
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
-    "SQLAlchemy>=2.0.43"
+    "SQLAlchemy~=2.0"
 ]
 
 [project.scripts]
