@@ -5,11 +5,18 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "hvp-db"
 version = "0.1.0"
-description = "SQLAlchemy models for the Human Virome Project database"
+description = "UPenn Human Virome Project sample database"
 readme = "README.md"
+
 requires-python = ">=3.8"
 dependencies = [
     "SQLAlchemy~=2.0"
+]
+
+[project.optional-dependencies]
+web = [
+    "Flask~=2.0",
+    "gunicorn",
 ]
 
 [project.scripts]

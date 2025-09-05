@@ -47,7 +47,13 @@ AnatomicalSite = Enum(
 LabOrigin = Enum("wu", "teles", "zemel", "collman", name="lab_origin")
 
 StorageBuffer = Enum(
-    "neat", "bead_beater", "vtm", "pbs", "zymo_shield", "oral_cocktail", name="storage_buffer"
+    "neat",
+    "bead_beater",
+    "vtm",
+    "pbs",
+    "zymo_shield",
+    "oral_cocktail",
+    name="storage_buffer",
 )
 
 PrepType = Enum(
@@ -59,7 +65,9 @@ PrepType = Enum(
     name="prep_type",
 )
 
-ExtractionType = Enum("none", "qiaamp_viral_rna_minikit", "allprep", name="extraction_type")
+ExtractionType = Enum(
+    "none", "qiaamp_viral_rna_minikit", "allprep", name="extraction_type"
+)
 RNAType = Enum("powersoil_pro", "allprep", name="rna_type")
 DNAType = Enum("powersoil_pro", "allprep", name="dna_type")
 AmplifiedType = Enum(
@@ -80,7 +88,13 @@ BarcodeSet = Enum("A", "B", "C", "D", name="barcode_set")
 SampleUse = Enum("experiment", "pilot", name="sample_use")
 
 SequencePlatform = Enum(
-    "miseq_i100", "nextseq", "miseq", "miniseq", "minion", "pacbio", name="sequence_platform"
+    "miseq_i100",
+    "nextseq",
+    "miseq",
+    "miniseq",
+    "minion",
+    "pacbio",
+    name="sequence_platform",
 )
 
 SequenceGroup = Enum("bushman", "moustafa", name="sequence_group")

@@ -1,11 +1,10 @@
 import argparse
 import csv
 from datetime import date
-from typing import Dict
-
+from hvp_db.app import main as run_web_app
+from hvp_db.models import Sample, get_session_maker, init_engine
 from sqlalchemy import Date
-
-from .models import Sample, get_session_maker, init_engine
+from typing import Dict
 
 
 def _convert_row(row: Dict[str, str]) -> Dict[str, object]:
@@ -54,6 +53,10 @@ def main(argv: list[str] | None = None) -> None:
         init_engine(args.url, echo=args.echo)
     elif args.command == "load-csv":
         _load_csv(args.url, args.csvfile, echo=args.echo)
+    elif args.command == "web":
+        run_web_app()
+    else:
+        parser.error(f"Unknown command {args.command}")
 
 
 if __name__ == "__main__":  # pragma: no cover - CLI entry point

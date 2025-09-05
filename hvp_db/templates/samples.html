@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<table id="samples-table" class="display">
+  <thead>
+    <tr>
+    {% for col in columns %}<th>{{ col }}</th>{% endfor %}
+    </tr>
+  </thead>
+</table>
+<script>
+$(document).ready(function() {
+  $('#samples-table').DataTable({
+    ajax: '/api/samples',
+    columns: [
+      {% for col in columns %}{ data: '{{ col }}', title: '{{ col }}' }{{ ',' if not loop.last else '' }}
+      {% endfor %}
+    ]
+  });
+});
+</script>
+{% endblock %}
