@@ -42,19 +42,22 @@ def main(argv: list[str] | None = None) -> None:
     p_init.add_argument("url", help="database URL, e.g. sqlite:///hvp.db")
     p_init.add_argument("--echo", action="store_true", help="echo SQL statements")
 
-    p_load = subparsers.add_parser("load-csv", help="load sample rows from a CSV file")
+    p_load = subparsers.add_parser("load", help="load sample rows from a CSV file")
     p_load.add_argument("url", help="database URL")
     p_load.add_argument("csvfile", help="path to CSV file")
     p_load.add_argument("--echo", action="store_true", help="echo SQL statements")
+
+    p_web = subparsers.add_parser("web", help="run the Flask web application")
+    p_web.add_argument("url", help="database URL")
 
     args = parser.parse_args(argv)
 
     if args.command == "init":
         init_engine(args.url, echo=args.echo)
-    elif args.command == "load-csv":
+    elif args.command == "load":
         _load_csv(args.url, args.csvfile, echo=args.echo)
     elif args.command == "web":
-        run_web_app()
+        run_web_app(args.url)
     else:
         parser.error(f"Unknown command {args.command}")
 

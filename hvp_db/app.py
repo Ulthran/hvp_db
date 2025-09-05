@@ -3,7 +3,7 @@ from hvp_db import get_session_maker, Sample
 from sqlalchemy import select
 
 
-def create_app(database_url: str = "sqlite:///hvp.db") -> Flask:
+def create_app(database_url: str) -> Flask:
     """Create and configure the Flask application.
 
     Parameters
@@ -27,11 +27,11 @@ def create_app(database_url: str = "sqlite:///hvp.db") -> Flask:
     return app
 
 
-def main() -> None:
+def main(database_url: str) -> None:
     """Run the Flask application in debug for dev."""
-    app = create_app()
+    app = create_app(database_url)
     app.run(debug=True)
 
 
 if __name__ == "__main__":
-    main()
+    main("sqlite:///hvp.db")

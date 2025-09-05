@@ -1,7 +1,6 @@
 """WSGI entry point for the hvp_web application."""
 
 import os
-
 from hvp_db.app import create_app
 
 # Determine the database URL from the environment, defaulting to the
