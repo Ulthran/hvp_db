@@ -30,3 +30,22 @@ with Session() as session:
 
 The call to `get_session_maker` automatically creates the database tables if
 needed.
+
+## Command line interface
+
+The package installs a small CLI named `hvp-db`.
+
+Initialize a new SQLite database:
+
+```bash
+hvp-db init sqlite:///hvp.db
+```
+
+Load samples from a CSV file:
+
+```bash
+hvp-db load-csv sqlite:///hvp.db samples.csv
+```
+
+CSV columns should match the fields of the `Sample` model and dates must be in
+ISO format (`YYYY-MM-DD`).
