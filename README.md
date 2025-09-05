@@ -38,10 +38,10 @@ ISO format (`YYYY-MM-DD`).
 Run the Flask site in dev mode:
 
 ```bash
-hvp-db web sqlite:///hvp.db
+hvp-db web sqlite:///hvp.db password
 ```
 
-Or put it into production as a system daemon with something like this (make sure to set the env var `HVP_DB_URI` properly for your daemon):
+Or put it into production as a system daemon with something like this (make sure to set the env vars `HVP_DB_URI` and `HVP_DB_PASSWORD` properly for your daemon):
 
 ```bash
 gunicorn --workers 2 --bind unix:/run/hvp.sock hvp_db/wsgi:app
