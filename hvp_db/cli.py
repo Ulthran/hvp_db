@@ -49,6 +49,7 @@ def main(argv: list[str] | None = None) -> None:
 
     p_web = subparsers.add_parser("web", help="run the Flask web application")
     p_web.add_argument("url", help="database URL")
+    p_web.add_argument("password", help="shared password for login")
 
     args = parser.parse_args(argv)
 
@@ -57,7 +58,7 @@ def main(argv: list[str] | None = None) -> None:
     elif args.command == "load":
         _load_csv(args.url, args.csvfile, echo=args.echo)
     elif args.command == "web":
-        run_web_app(args.url)
+        run_web_app(args.url, args.password)
     else:
         parser.error(f"Unknown command {args.command}")
 
