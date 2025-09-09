@@ -80,7 +80,7 @@ def create_app(
             samples_data = []
             for sample in session.scalars(select(Sample)).all():
                 samples_data.append({col: getattr(sample, col) for col in columns})
-        return jsonify(samples_data)
+        return jsonify({"data": samples_data})
 
     return app
 
