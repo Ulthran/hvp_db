@@ -9,7 +9,7 @@ from flask import (
     session,
     url_for,
 )
-from hvp_db import get_session_maker, Sample
+from hvp_db.models import get_session_maker, Sample
 from sqlalchemy import select
 from typing import Optional
 
