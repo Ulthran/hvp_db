@@ -1,20 +1,8 @@
-"""WSGI entry point for the hvp_web application."""
-
 import os
 from hvp_db.app import create_app
-from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
+# Pull DB URL and other config from environment
+DATABASE_URL = os.environ.get("HVP_DB_URI", "sqlite:///./db.sqlite")
 
-# Determine the database URL from the environment, defaulting to the
-# project's standard SQLite database if not specified.
-DATABASE_URL = os.environ.get("HVP_DB_URI", "sqlite:///hvp.db")
-
-# Determine the script name (URL prefix) from the environment, defaulting to
-# the root if not specified.
-script_name = os.environ.get("HVP_PROXY_PATH", "/hvp")
-
-# The Flask application object for WSGI servers to use.
-app = DispatcherMiddleware(
-    create_app(database_url=DATABASE_URL),
-    {script_name: create_app(database_url=DATABASE_URL)},
-)
+# Create the Flask app
+app = create_app(database_url=DATABASE_URL)
