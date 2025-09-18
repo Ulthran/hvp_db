@@ -1,16 +1,8 @@
 import os
 import uuid
-from flask import (
-    Flask,
-    jsonify,
-    redirect,
-    render_template,
-    request,
-    session,
-    url_for,
-)
-from hvp_db.models import get_session_maker, Sample
-from sqlalchemy import select
+from flask import Flask, g
+from hvp_db.database import db_session
+from hvp_db.routes import bp as hvp_bp
 from typing import Optional
 
 
@@ -37,50 +29,22 @@ def create_app(
         "pass a password to create_app."
     )
     app.config["SHARED_PASSWORD"] = shared_password
-    SessionMaker = get_session_maker(database_url)
 
-    ### Auth ###
     @app.before_request
-    def require_login():
-        if request.endpoint not in {"login", "static"} and not session.get(
-            "authenticated"
-        ):
-            return redirect(url_for("login", next=request.path))
+    def create_session():
+        g.db = db_session(database_url)()
 
-    @app.route("/login", methods=["GET", "POST"])
-    def login():
-        error = None
-        if request.method == "POST":
-            if request.form.get("password") == app.config["SHARED_PASSWORD"]:
-                session["authenticated"] = True
-                return redirect(request.args.get("next") or url_for("index"))
-            error = "Incorrect password"
-        return render_template("login.html", error=error)
+    @app.teardown_request
+    def remove_session(exception=None):
+        db = g.pop("db", None)
+        if db is not None:
+            if exception:
+                db.rollback()
+            else:
+                db.commit()
+            db.close()
 
-    @app.route("/logout")
-    def logout():
-        session.pop("authenticated", None)
-        return redirect(url_for("login"))
-
-    ### Pages ###
-    @app.route("/")
-    def index():
-        return render_template("index.html")
-
-    @app.route("/samples")
-    def samples():
-        columns = [c.name for c in Sample.__table__.columns]
-        return render_template("samples.html", columns=columns)
-
-    ### API ###
-    @app.route("/api/samples")
-    def samples_api():
-        with SessionMaker() as session:
-            columns = [c.name for c in Sample.__table__.columns]
-            samples_data = []
-            for sample in session.scalars(select(Sample)).all():
-                samples_data.append({col: getattr(sample, col) for col in columns})
-        return jsonify({"data": samples_data})
+    app.register_blueprint(hvp_bp, url_prefix="/hvp")
 
     return app
 

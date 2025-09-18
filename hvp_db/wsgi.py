@@ -14,5 +14,7 @@ DATABASE_URL = os.environ.get("HVP_DB_URI", "sqlite:///hvp.db")
 script_name = os.environ.get("HVP_PROXY_PATH", "/hvp")
 
 # The Flask application object for WSGI servers to use.
-app = create_app(database_url=DATABASE_URL)
-app = DispatcherMiddleware(app, {script_name: app})
+app = DispatcherMiddleware(
+    create_app(database_url=DATABASE_URL),
+    {script_name: create_app(database_url=DATABASE_URL)},
+)

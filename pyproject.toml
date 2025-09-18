@@ -16,6 +16,7 @@ dependencies = [
 [project.optional-dependencies]
 web = [
     "Flask~=2.0",
+    "flask_sqlalchemy~=3.1",
     "gunicorn",
 ]
 

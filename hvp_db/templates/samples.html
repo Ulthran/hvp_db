@@ -10,7 +10,7 @@
 <script>
 $(document).ready(function() {
   $('#samples-table').DataTable({
-    ajax: '/api/samples',
+    ajax: {{ url_for('hvp.samples_api') | tojson }},
     columns: [
       {% for col in columns %}{ data: '{{ col }}', title: '{{ col }}' }{{ ',' if not loop.last else '' }}
       {% endfor %}
