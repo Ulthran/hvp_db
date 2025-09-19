@@ -12,7 +12,7 @@ from flask import (
 from hvp_db.models import Sample
 
 
-bp = Blueprint("hvp", __name__)
+bp = Blueprint("hvp", __name__, url_prefix="/hvp")
 
 
 ### Auth ###
