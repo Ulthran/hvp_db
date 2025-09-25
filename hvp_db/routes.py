@@ -1,3 +1,5 @@
+from datetime import date as date_type
+
 from flask import (
     Blueprint,
     current_app,
@@ -69,8 +71,19 @@ def index():
 
 @bp.route("/samples")
 def samples():
-    columns = [c.name for c in Sample.__table__.columns]
-    return render_template("samples.html", columns=columns)
+    table_columns = Sample.__table__.columns
+    columns = [c.name for c in table_columns]
+    date_columns = []
+    for column in table_columns:
+        try:
+            python_type = column.type.python_type
+        except NotImplementedError:
+            continue
+        if python_type is date_type:
+            date_columns.append(column.name)
+    return render_template(
+        "samples.html", columns=columns, date_columns=date_columns
+    )
 
 
 ### API ###
@@ -80,6 +93,12 @@ def samples_api():
     db = g.db
     samples_data = []
     for sample in db.query(Sample).all():
-        samples_data.append({col: getattr(sample, col) for col in columns})
-    print(samples_data)
+        record = {}
+        for col in columns:
+            value = getattr(sample, col)
+            if isinstance(value, date_type):
+                record[col] = value.isoformat()
+            else:
+                record[col] = value
+        samples_data.append(record)
     return jsonify({"data": samples_data})
