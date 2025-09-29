@@ -11,8 +11,66 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background-color: #f9fafb;
+    }
+
+    .site-banner {
+      background-color: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 0.75rem 1.5rem;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.1);
+    }
+
+    .banner-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .logo-link img {
+      height: 48px;
+      width: auto;
+      display: block;
+    }
+
+    .banner-nav a {
+      color: #0f172a;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 1rem;
+    }
+
+    .banner-nav a:hover,
+    .banner-nav a:focus {
+      text-decoration: underline;
+    }
+
+    .site-main {
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 0 1.5rem 3rem;
+    }
+  </style>
 </head>
 <body>
-  {% block content %}{% endblock %}
+  <header class="site-banner">
+    <div class="banner-content">
+      <a class="logo-link" href="{{ url_for('hvp.index') }}">
+        <img src="{{ url_for('static', filename='HVP_logo.svg') }}" alt="Human Virome Project logo">
+      </a>
+      <nav class="banner-nav">
+        <a href="{{ url_for('hvp.samples') }}">Samples</a>
+      </nav>
+    </div>
+  </header>
+  <main class="site-main">
+    {% block content %}{% endblock %}
+  </main>
 </body>
 </html>
