@@ -20,7 +20,7 @@ def create_app(
         Password required to log in. If not provided, it will be read from
         the environment variable `HVP_DB_PASSWORD`
     """
-    app = Flask(__name__)
+    app = Flask(__name__, static_url_path="/hvp/static")
     app.secret_key = uuid.uuid4().hex
     if shared_password is None:
         shared_password = os.environ.get("HVP_DB_PASSWORD")
