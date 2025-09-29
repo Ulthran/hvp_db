@@ -1,21 +1,188 @@
 {% extends "base.html" %}
 {% block content %}
-<table id="samples-table" class="display">
+<style>
+  .samples-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .column-toggle-panel {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1rem;
+    max-height: 16rem;
+    overflow: auto;
+  }
+
+  .column-toggle-panel h2 {
+    font-size: 1rem;
+    margin: 0 0 0.75rem;
+  }
+
+  .column-toggle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.5rem 1rem;
+  }
+
+  .column-toggle-grid label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+
+  table.dataTable thead th,
+  table.dataTable thead td {
+    white-space: nowrap;
+  }
+
+  #samples-table {
+    width: 100%;
+  }
+
+  #samples-table thead tr.filter-row th {
+    padding: 4px 8px;
+  }
+
+  #samples-table thead tr.filter-row input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 4px 6px;
+    font-size: 0.85rem;
+  }
+
+  #samples-table th.sticky-column,
+  #samples-table td.sticky-column {
+    position: sticky;
+    left: 0;
+    background: #fff;
+    z-index: 2;
+  }
+
+  #samples-table th.sticky-column {
+    z-index: 4;
+  }
+
+  #samples-table_wrapper .dt-buttons {
+    margin-bottom: 0.75rem;
+  }
+</style>
+
+<div class="samples-controls">
+  <div class="column-toggle-panel">
+    <h2>Select columns to display</h2>
+    <div id="column-toggle-grid" class="column-toggle-grid"></div>
+  </div>
+</div>
+
+<table id="samples-table" class="display nowrap" cellspacing="0">
   <thead>
     <tr>
     {% for col in columns %}<th>{{ col }}</th>{% endfor %}
     </tr>
+    <tr class="filter-row">
+    {% for col in columns %}<th><input type="text" placeholder="Search" data-column-index="{{ loop.index0 }}"></th>{% endfor %}
+    </tr>
   </thead>
 </table>
 <script>
-$(document).ready(function() {
-  $('#samples-table').DataTable({
-    ajax: {{ url_for('hvp.samples_api') | tojson }},
-    columns: [
-      {% for col in columns %}{ data: '{{ col }}', title: '{{ col }}' }{{ ',' if not loop.last else '' }}
-      {% endfor %}
-    ]
+  const columns = {{ columns | tojson }};
+  const dateColumns = {{ date_columns | tojson }};
+
+  function formatDateValue(value) {
+    if (!value) {
+      return '';
+    }
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) {
+      return value;
+    }
+    return parsed.toISOString().split('T')[0];
+  }
+
+  $(document).ready(function() {
+    const dateColumnIndices = dateColumns
+      .map(name => columns.indexOf(name))
+      .filter(index => index !== -1);
+
+    const columnDefs = [
+      {
+        targets: 0,
+        className: 'sticky-column'
+      }
+    ];
+
+    if (dateColumnIndices.length) {
+      columnDefs.push({
+        targets: dateColumnIndices,
+        render: function(data, type) {
+          if (!data) {
+            return '';
+          }
+          const formatted = formatDateValue(data);
+          if (type === 'sort') {
+            return formatted.replace(/-/g, '');
+          }
+          return formatted;
+        }
+      });
+    }
+
+    const table = $('#samples-table').DataTable({
+      ajax: {
+        url: {{ url_for('hvp.samples_api') | tojson }},
+        dataSrc: 'data'
+      },
+      columns: columns.map(col => ({ data: col, title: col })),
+      columnDefs: columnDefs,
+      dom: 'Bfrtip',
+      buttons: [
+        {
+          extend: 'csvHtml5',
+          text: 'Export CSV',
+          title: 'samples',
+          exportOptions: {
+            columns: ':visible'
+          }
+        }
+      ],
+      orderCellsTop: true,
+      scrollX: true,
+      autoWidth: false,
+      deferRender: true
+    });
+
+    $('#samples-table thead tr.filter-row input').on('keyup change', function() {
+      const columnIndex = $(this).data('column-index');
+      table.column(columnIndex).search(this.value).draw();
+    });
+
+    const $columnToggleGrid = $('#column-toggle-grid');
+    columns.forEach(function(columnName, index) {
+      const id = `column-toggle-${index}`;
+      const isSampleId = index === 0;
+      const $checkbox = $('<input>', {
+        type: 'checkbox',
+        id,
+        checked: true,
+        'data-column-index': index,
+        disabled: isSampleId
+      });
+
+      const $label = $('<label>', { for: id });
+      $label.append($checkbox, $('<span>').text(columnName));
+      $columnToggleGrid.append($label);
+    });
+
+    $columnToggleGrid.on('change', 'input[type="checkbox"]', function() {
+      const columnIndex = $(this).data('column-index');
+      const column = table.column(columnIndex);
+      column.visible(this.checked);
+    });
   });
-});
 </script>
 {% endblock %}
