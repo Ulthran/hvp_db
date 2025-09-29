@@ -30,6 +30,8 @@ def create_app(
     )
     app.config["SHARED_PASSWORD"] = shared_password
 
+    app.config["SESSION_COOKIE_PATH"] = "/hvp"
+
     @app.before_request
     def create_session():
         g.db = db_session(database_url)()

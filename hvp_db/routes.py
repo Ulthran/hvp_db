@@ -81,9 +81,7 @@ def samples():
             continue
         if python_type is date_type:
             date_columns.append(column.name)
-    return render_template(
-        "samples.html", columns=columns, date_columns=date_columns
-    )
+    return render_template("samples.html", columns=columns, date_columns=date_columns)
 
 
 ### API ###
