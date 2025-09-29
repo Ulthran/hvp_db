@@ -92,7 +92,11 @@
 <script>
   const columns = {{ columns | tojson }};
   const dateColumns = {{ date_columns | tojson }};
+  const alwaysVisibleColumns = new Set([
+    'sample_id'
+  ]);
   const defaultVisibleColumns = new Set([
+    'sample_id',
     'sample_id_alias',
     'participant_id',
     'anatomical_site',
@@ -102,7 +106,7 @@
     'extraction_type',
     'sequence_run_id'
   ]);
-  const stickyColumnName = 'sample_id_alias';
+  const stickyColumnName = 'sample_id';
 
   function formatDateValue(value) {
     if (!value) {
@@ -154,7 +158,7 @@
       columns: columns.map(col => ({
         data: col,
         title: col,
-        visible: defaultVisibleColumns.has(col)
+        visible: defaultVisibleColumns.has(col) || alwaysVisibleColumns.has(col)
       })),
       columnDefs: columnDefs,
       dom: 'Bfrtip',
@@ -188,12 +192,14 @@
     const $columnToggleGrid = $('#column-toggle-grid');
     columns.forEach(function(columnName, index) {
       const id = `column-toggle-${index}`;
-      const isChecked = defaultVisibleColumns.has(columnName);
+      const isRequired = alwaysVisibleColumns.has(columnName);
+      const isChecked = isRequired || defaultVisibleColumns.has(columnName);
       const $checkbox = $('<input>', {
         type: 'checkbox',
         id,
         checked: isChecked,
-        'data-column-index': index
+        'data-column-index': index,
+        disabled: isRequired
       });
 
       const $label = $('<label>', { for: id });
@@ -205,6 +211,15 @@
       const columnIndex = $(this).data('column-index');
       const column = table.column(columnIndex);
       column.visible(this.checked);
+      table.columns.adjust().draw(false);
+    });
+
+    table.on('column-visibility.dt draw.dt', function() {
+      table.columns.adjust();
+    });
+
+    $(window).on('resize', function() {
+      table.columns.adjust();
     });
   });
 </script>
