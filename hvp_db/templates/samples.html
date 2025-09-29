@@ -101,10 +101,7 @@
     if (Number.isNaN(parsed.getTime())) {
       return value;
     }
-    const year = parsed.getUTCFullYear();
-    const month = String(parsed.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(parsed.getUTCDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    return parsed.toISOString().split('T')[0];
   }
 
   $(document).ready(function() {
