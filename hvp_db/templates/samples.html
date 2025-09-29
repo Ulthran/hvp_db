@@ -174,9 +174,15 @@
       deferRender: true
     });
 
-    $('#samples-table thead tr.filter-row input').on('keyup change', function() {
+    const $tableContainer = $(table.table().container());
+    $tableContainer.on('keyup change input', 'thead tr.filter-row input', function() {
       const columnIndex = $(this).data('column-index');
-      table.column(columnIndex).search(this.value).draw();
+      const column = table.column(columnIndex);
+      const value = this.value;
+
+      if (column.search() !== value) {
+        column.search(value).draw();
+      }
     });
 
     const $columnToggleGrid = $('#column-toggle-grid');
