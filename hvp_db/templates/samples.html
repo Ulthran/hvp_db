@@ -92,6 +92,17 @@
 <script>
   const columns = {{ columns | tojson }};
   const dateColumns = {{ date_columns | tojson }};
+  const defaultVisibleColumns = new Set([
+    'sample_id_alias',
+    'participant_id',
+    'anatomical_site',
+    'lab_origin',
+    'date_hvp_custody',
+    'prep_type',
+    'extraction_type',
+    'sequence_run_id'
+  ]);
+  const stickyColumnName = 'sample_id_alias';
 
   function formatDateValue(value) {
     if (!value) {
@@ -109,12 +120,15 @@
       .map(name => columns.indexOf(name))
       .filter(index => index !== -1);
 
-    const columnDefs = [
-      {
-        targets: 0,
+    const columnDefs = [];
+
+    const stickyColumnIndex = columns.indexOf(stickyColumnName);
+    if (stickyColumnIndex !== -1) {
+      columnDefs.push({
+        targets: stickyColumnIndex,
         className: 'sticky-column'
-      }
-    ];
+      });
+    }
 
     if (dateColumnIndices.length) {
       columnDefs.push({
@@ -137,7 +151,11 @@
         url: {{ url_for('hvp.samples_api') | tojson }},
         dataSrc: 'data'
       },
-      columns: columns.map(col => ({ data: col, title: col })),
+      columns: columns.map(col => ({
+        data: col,
+        title: col,
+        visible: defaultVisibleColumns.has(col)
+      })),
       columnDefs: columnDefs,
       dom: 'Bfrtip',
       buttons: [
@@ -164,13 +182,12 @@
     const $columnToggleGrid = $('#column-toggle-grid');
     columns.forEach(function(columnName, index) {
       const id = `column-toggle-${index}`;
-      const isSampleId = index === 0;
+      const isChecked = defaultVisibleColumns.has(columnName);
       const $checkbox = $('<input>', {
         type: 'checkbox',
         id,
-        checked: true,
-        'data-column-index': index,
-        disabled: isSampleId
+        checked: isChecked,
+        'data-column-index': index
       });
 
       const $label = $('<label>', { for: id });
