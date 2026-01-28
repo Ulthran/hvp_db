@@ -32,15 +32,17 @@ def create_app(
 
     app.config["SESSION_COOKIE_PATH"] = "/hvp"
 
+    app.config["DB_READ_ONLY"] = True
+
     @app.before_request
     def create_session():
-        g.db = db_session(database_url)()
+        g.db = db_session(database_url, read_only=app.config["DB_READ_ONLY"])()
 
     @app.teardown_request
     def remove_session(exception=None):
         db = g.pop("db", None)
         if db is not None:
-            if exception:
+            if exception or app.config.get("DB_READ_ONLY", False):
                 db.rollback()
             else:
                 db.commit()
