@@ -1,0 +1,3 @@
+MAILTO="amarques@pennmedicine.upenn.edu,anotheremail@pennmedicine.upenn.edu"
+
+5 8 * * 0 bash /var/www/html/hvp/hvp_db/scripts/backup.sh
